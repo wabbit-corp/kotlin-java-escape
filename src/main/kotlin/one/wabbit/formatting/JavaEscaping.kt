@@ -2,9 +2,15 @@ package one.wabbit.formatting
 
 private val SANE_ASCII_CHARS = "~!@#\$%^&*()_+{}|:\"<>?`-=[]\\;',./ ".toSet()
 
-fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.MAX_VALUE, limitEnding: String = "..."): String {
+fun escapeJavaString(
+    str: CharSequence,
+    doubleQuoted: Boolean,
+    limit: Int = Int.MAX_VALUE,
+    limitEnding: String = "...",
+): String {
     // Escape any non-alphanumeric unicode characters (they will likely render on the terminal)
-    // Don't escape simple ASCII characters (they will render on the terminal) like ~!@#$%^&*()_+{}|:"<>?`-=[]\;',./
+    // Don't escape simple ASCII characters (they will render on the terminal) like
+    // ~!@#$%^&*()_+{}|:"<>?`-=[]\;',./
     // Escape standard escape characters like \n, etc
     var count = 0
     val sb = StringBuilder()
@@ -19,8 +25,7 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                 if (count + 2 <= limit) {
                     sb.append("\\\\")
                     count += 2
-                }
-                else {
+                } else {
                     sb.append(limitEnding)
                     break
                 }
@@ -28,8 +33,7 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                 if (count + 2 <= limit) {
                     sb.append("\\t")
                     count += 2
-                }
-                else {
+                } else {
                     sb.append(limitEnding)
                     break
                 }
@@ -37,8 +41,7 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                 if (count + 2 <= limit) {
                     sb.append("\\b")
                     count += 2
-                }
-                else {
+                } else {
                     sb.append(limitEnding)
                     break
                 }
@@ -46,8 +49,7 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                 if (count + 2 <= limit) {
                     sb.append("\\n")
                     count += 2
-                }
-                else {
+                } else {
                     sb.append(limitEnding)
                     break
                 }
@@ -55,8 +57,7 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                 if (count + 2 <= limit) {
                     sb.append("\\r")
                     count += 2
-                }
-                else {
+                } else {
                     sb.append(limitEnding)
                     break
                 }
@@ -65,13 +66,11 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                     if (count + 2 <= limit) {
                         sb.append("\\'")
                         count += 2
-                    }
-                    else {
+                    } else {
                         sb.append(limitEnding)
                         break
                     }
-                }
-                else {
+                } else {
                     sb.append(c)
                     count += 1
                 }
@@ -80,13 +79,11 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                     if (count + 2 <= limit) {
                         sb.append("\\\"")
                         count += 2
-                    }
-                    else {
+                    } else {
                         sb.append(limitEnding)
                         break
                     }
-                }
-                else {
+                } else {
                     sb.append(c)
                     count += 1
                 }
@@ -104,8 +101,7 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
                     sb.append("\\u")
                     sb.append(c.code.toString(16).padStart(4, '0'))
                     count += 4
-                }
-                else {
+                } else {
                     sb.append(limitEnding)
                     break
                 }
@@ -115,7 +111,7 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
     return sb.toString()
 }
 
-//object JavaStringEscaping {
+// object JavaStringEscaping {
 //    fun escape(s: String): String {
 //        val sb = StringBuilder()
 //        for (c in s) {
@@ -132,10 +128,10 @@ fun escapeJavaString(str: CharSequence, doubleQuoted: Boolean, limit: Int = Int.
 //        }
 //        return sb.toString()
 //    }
-//}
+// }
 
-fun escapeJavaChar(ch: Char): String {
-    return when (ch) {
+fun escapeJavaChar(ch: Char): String =
+    when (ch) {
         '\t' -> "\\t"
         '\r' -> "\\r"
         '\n' -> "\\n"
@@ -145,8 +141,11 @@ fun escapeJavaChar(ch: Char): String {
         '-' -> "\\-"
 
         else ->
-            if (ch.isISOControl()) "\\x%02x".format(ch.code)
-            else if (ch.code < 0x100) ch.toString()
-            else "\\u%04x".format(ch.code)
+            if (ch.isISOControl()) {
+                "\\x%02x".format(ch.code)
+            } else if (ch.code < 0x100) {
+                ch.toString()
+            } else {
+                "\\u%04x".format(ch.code)
+            }
     }
-}
