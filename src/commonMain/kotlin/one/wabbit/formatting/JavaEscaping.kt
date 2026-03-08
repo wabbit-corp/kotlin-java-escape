@@ -2,6 +2,9 @@ package one.wabbit.formatting
 
 private val SANE_ASCII_CHARS = "~!@#\$%^&*()_+{}|:\"<>?`-=[]\\;',./ ".toSet()
 
+private fun Int.toHex(width: Int): String =
+    toString(16).lowercase().padStart(width, '0')
+
 fun escapeJavaString(
     str: CharSequence,
     doubleQuoted: Boolean,
@@ -142,10 +145,10 @@ fun escapeJavaChar(ch: Char): String =
 
         else ->
             if (ch.isISOControl()) {
-                "\\x%02x".format(ch.code)
+                "\\x${ch.code.toHex(2)}"
             } else if (ch.code < 0x100) {
                 ch.toString()
             } else {
-                "\\u%04x".format(ch.code)
+                "\\u${ch.code.toHex(4)}"
             }
     }
