@@ -21,6 +21,39 @@ plugins {
     id("org.jetbrains.dokka")
     id("org.jetbrains.kotlinx.kover")
     id("maven-publish")
+
+    id("com.vanniktech.maven.publish")
+}
+
+mavenPublishing {
+    coordinates("one.wabbit", "kotlin-java-escape", "1.0.1")
+    publishToMavenCentral()
+    signAllPublications()
+    pom {
+        name.set("kotlin-java-escape")
+        description.set("kotlin-java-escape")
+        url.set("https://github.com/wabbit-corp/kotlin-java-escape")
+        licenses {
+            license {
+                name.set("GNU Affero General Public License v3.0 or later")
+                url.set("https://spdx.org/licenses/AGPL-3.0-or-later.html")
+            }
+        }
+        developers {
+            developer {
+                id.set("wabbit-corp")
+                name.set("Wabbit Consulting Corporation")
+
+                email.set("wabbit@wabbit.one")
+
+            }
+        }
+        scm {
+            url.set("https://github.com/wabbit-corp/kotlin-java-escape")
+            connection.set("scm:git:git://github.com/wabbit-corp/kotlin-java-escape.git")
+            developerConnection.set("scm:git:ssh://git@github.com/wabbit-corp/kotlin-java-escape.git")
+        }
+    }
 }
 
 kotlin {
@@ -73,6 +106,46 @@ kotlin {
     }
 }
 
+val configuredVersionString = version.toString()
+
+tasks.register("printVersion") {
+    inputs.property("configuredVersion", configuredVersionString)
+    doLast {
+        println(inputs.properties["configuredVersion"])
+    }
+}
+
+tasks.register("assertReleaseVersion") {
+    inputs.property("configuredVersion", configuredVersionString)
+    doLast {
+        val versionString = inputs.properties["configuredVersion"].toString()
+        require(!versionString.endsWith("+dev-SNAPSHOT")) {
+            "Release publishing requires a non-snapshot version, got $versionString"
+        }
+        val refType = System.getenv("GITHUB_REF_TYPE") ?: ""
+        val refName = System.getenv("GITHUB_REF_NAME") ?: ""
+        if (refType == "tag" && refName.isNotBlank()) {
+            val expectedTag = "v$versionString"
+            require(refName == expectedTag) {
+                "Git tag $refName does not match project version $versionString"
+            }
+        }
+    }
+}
+
+tasks.register("assertSnapshotVersion") {
+    inputs.property("configuredVersion", configuredVersionString)
+    doLast {
+        val versionString = inputs.properties["configuredVersion"].toString()
+        require(versionString.endsWith("+dev-SNAPSHOT")) {
+            "Snapshot publishing requires a +dev-SNAPSHOT version, got $versionString"
+        }
+        require((System.getenv("GITHUB_REF_TYPE") ?: "") != "tag") {
+            "Snapshot publishing must not run from a tag ref"
+        }
+    }
+}
+
 tasks.withType<Test>().configureEach {
     jvmArgs("-ea")
 }
@@ -85,6 +158,13 @@ dokka {
     }
 
     dokkaSourceSets.configureEach {
+        if (name == "commonMain") {
+            val dokkaModuleFile = file("docs/dokka-module.md")
+            if (dokkaModuleFile.exists()) {
+                includes.from(dokkaModuleFile)
+            }
+        }
+
         sourceLink {
             localDirectory.set(file("src"))
             remoteUrl("https://github.com/wabbit-corp/kotlin-java-escape/tree/master/src")
