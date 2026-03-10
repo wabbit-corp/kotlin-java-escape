@@ -26,10 +26,8 @@ fun escapeJavaString(
     limit: Int = Int.MAX_VALUE,
     limitEnding: String = "...",
 ): String {
-    // Escape any non-alphanumeric unicode characters (they will likely render on the terminal)
-    // Don't escape simple ASCII characters (they will render on the terminal) like
-    // ~!@#$%^&*()_+{}|:"<>?`-=[]\;',./
-    // Escape standard escape characters like \n, etc
+    // Preserve readable ASCII, use Java-style escapes for control characters, and
+    // fall back to Unicode escapes when a character would render ambiguously.
     var count = 0
     val sb = StringBuilder()
     for (c in str) {
@@ -115,10 +113,10 @@ fun escapeJavaString(
                 count += 1
             }
             else -> {
-                if (count + 4 <= limit) {
+                if (count + 6 <= limit) {
                     sb.append("\\u")
                     sb.append(c.code.toString(16).padStart(4, '0'))
-                    count += 4
+                    count += 6
                 } else {
                     sb.append(limitEnding)
                     break
@@ -128,25 +126,6 @@ fun escapeJavaString(
     }
     return sb.toString()
 }
-
-// object JavaStringEscaping {
-//    fun escape(s: String): String {
-//        val sb = StringBuilder()
-//        for (c in s) {
-//            when (c) {
-//                '\b' -> sb.append("\\b")
-//                '\t' -> sb.append("\\t")
-//                '\n' -> sb.append("\\n")
-//                '\r' -> sb.append("\\r")
-//                '\"' -> sb.append("\\\"")
-//                '\'' -> sb.append("\\'")
-//                '\\' -> sb.append("\\\\")
-//                else -> sb.append(c)
-//            }
-//        }
-//        return sb.toString()
-//    }
-// }
 
 /**
  * Escapes a single character using Java-style escape sequences.
