@@ -5,6 +5,21 @@ private val SANE_ASCII_CHARS = "~!@#\$%^&*()_+{}|:\"<>?`-=[]\\;',./ ".toSet()
 private fun Int.toHex(width: Int): String =
     toString(16).lowercase().padStart(width, '0')
 
+/**
+ * Escapes a string so it can be rendered safely as Java-style literal content.
+ *
+ * Example:
+ * ```kotlin
+ * val escaped = escapeJavaString("Hello,\n\"world\"", doubleQuoted = true)
+ * check(escaped == "Hello,\\n\\\"world\\\"")
+ * ```
+ *
+ * @param str Input text to escape.
+ * @param doubleQuoted Whether the output is intended for a double-quoted string literal.
+ *   When `true`, `"` is escaped and `'` is preserved. When `false`, the inverse happens.
+ * @param limit Maximum length of the escaped output.
+ * @param limitEnding Suffix appended when the escaped output would exceed [limit].
+ */
 fun escapeJavaString(
     str: CharSequence,
     doubleQuoted: Boolean,
@@ -133,6 +148,12 @@ fun escapeJavaString(
 //    }
 // }
 
+/**
+ * Escapes a single character using Java-style escape sequences.
+ *
+ * Common control characters are rendered as short escapes such as `\n` and `\t`.
+ * ISO control characters fall back to `\xNN`, and non-ASCII printable characters use `\uXXXX`.
+ */
 fun escapeJavaChar(ch: Char): String =
     when (ch) {
         '\t' -> "\\t"
