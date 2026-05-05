@@ -1,9 +1,10 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 package one.wabbit.formatting
 
 private val SANE_ASCII_CHARS = "~!@#\$%^&*()_+{}|:\"<>?`-=[]\\;',./ ".toSet()
 
-private fun Int.toHex(width: Int): String =
-    toString(16).lowercase().padStart(width, '0')
+private fun Int.toHex(width: Int): String = toString(16).lowercase().padStart(width, '0')
 
 /**
  * Escapes a string so it can be rendered safely as Java-style literal content.
@@ -20,8 +21,8 @@ private fun Int.toHex(width: Int): String =
  * ```
  *
  * @param str Input text to escape.
- * @param doubleQuoted Whether the output is intended for a double-quoted string literal.
- *   When `true`, `"` is escaped and `'` is preserved. When `false`, the inverse happens.
+ * @param doubleQuoted Whether the output is intended for a double-quoted string literal. When
+ *   `true`, `"` is escaped and `'` is preserved. When `false`, the inverse happens.
  * @param limit Maximum number of escaped content characters to emit before appending [limitEnding].
  *   The suffix is not counted against this budget.
  * @param limitEnding Suffix appended when the escaped output would exceed [limit].

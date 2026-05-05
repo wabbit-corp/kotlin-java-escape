@@ -1,10 +1,17 @@
 # kotlin-java-escape
 
+![](./.meta/github-project-banner.png)
+
+<p align=center>
+    <img src="https://img.shields.io/maven-central/v/one.wabbit/kotlin-java-escape" alt="Maven Central">
+    <img src="https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF" alt="Kotlin Multiplatform">
+</p>
+
 `kotlin-java-escape` provides small, dependency-light utilities for rendering strings and characters with Java-style escaping.
 
 It is aimed at code generation, debugging, diagnostics, and any workflow where arbitrary text needs to be shown as a Java-friendly literal instead of raw terminal output.
 
-## Installation
+## 🚀 Installation
 
 ```kotlin
 commonMain.dependencies {
@@ -12,7 +19,7 @@ commonMain.dependencies {
 }
 ```
 
-## Quick Start
+## 🚀 Usage
 
 ```kotlin
 import one.wabbit.formatting.escapeJavaString
