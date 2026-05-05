@@ -44,7 +44,7 @@ check(escapeJavaChar('\u2603') == "\\u2603")
 
 ## Truncation
 
-`escapeJavaString` can cap the rendered output length after escaping:
+`escapeJavaString` can cap the escaped-content budget before appending a truncation suffix:
 
 ```kotlin
 import one.wabbit.formatting.escapeJavaString
@@ -53,17 +53,14 @@ val escaped = escapeJavaString("line1\nline2", doubleQuoted = true, limit = 6, l
 check(escaped == "line1...")
 ```
 
-The limit is applied to the escaped output, not to the original input length.
+The limit is applied to escaped content, not to the original input length. The truncation suffix is
+not counted against that limit.
 
 ## Output Rules
 
-- alphanumeric characters are kept as-is
-- common control characters use short escapes such as `\n`, `\r`, `\t`, and `\\`
-- non-ASCII characters are emitted as `\uXXXX`
-- ISO control characters in `escapeJavaChar` use `\xNN`
-
-## API Reference
-
-Published API docs are available at:
-
-- [https://wabbit-corp.github.io/kotlin-java-escape/](https://wabbit-corp.github.io/kotlin-java-escape/)
+- `escapeJavaString` preserves alphanumeric characters and common ASCII punctuation
+- `escapeJavaString` uses short escapes for `\n`, `\r`, `\t`, `\b`, selected quotes, and `\\`
+- non-ASCII letters and digits are preserved by `escapeJavaString`
+- other non-ASCII characters in `escapeJavaString` are emitted as `\uXXXX`
+- `escapeJavaChar` uses short escapes for `\t`, `\r`, `\n`, and `\\`
+- `escapeJavaChar` uses `\xNN` for other ISO control characters, including backspace

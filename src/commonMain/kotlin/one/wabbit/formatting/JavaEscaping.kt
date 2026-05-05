@@ -8,6 +8,11 @@ private fun Int.toHex(width: Int): String =
 /**
  * Escapes a string so it can be rendered safely as Java-style literal content.
  *
+ * The function returns literal content only; it does not add surrounding quote characters. Letters,
+ * digits, and a fixed set of common ASCII punctuation are preserved. `\n`, `\r`, `\t`, `\b`,
+ * backslash, and the quote character selected by [doubleQuoted] are rendered with Java-style escape
+ * sequences. Other ambiguous non-alphanumeric characters are rendered as `\uXXXX`.
+ *
  * Example:
  * ```kotlin
  * val escaped = escapeJavaString("Hello,\n\"world\"", doubleQuoted = true)
@@ -17,8 +22,10 @@ private fun Int.toHex(width: Int): String =
  * @param str Input text to escape.
  * @param doubleQuoted Whether the output is intended for a double-quoted string literal.
  *   When `true`, `"` is escaped and `'` is preserved. When `false`, the inverse happens.
- * @param limit Maximum length of the escaped output.
+ * @param limit Maximum number of escaped content characters to emit before appending [limitEnding].
+ *   The suffix is not counted against this budget.
  * @param limitEnding Suffix appended when the escaped output would exceed [limit].
+ * @return Escaped Java-style literal content.
  */
 fun escapeJavaString(
     str: CharSequence,
@@ -130,8 +137,13 @@ fun escapeJavaString(
 /**
  * Escapes a single character using Java-style escape sequences.
  *
- * Common control characters are rendered as short escapes such as `\n` and `\t`.
- * ISO control characters fall back to `\xNN`, and non-ASCII printable characters use `\uXXXX`.
+ * The characters `\t`, `\r`, `\n`, and backslash are rendered with short escapes. Other ISO control
+ * characters, including backspace, use `\xNN`. The characters `[`, `]`, and `-` are escaped for
+ * character-class style output. Quote characters are returned unchanged. Other code units below
+ * `0x100` are returned unchanged; code units at `0x100` and above use `\uXXXX`.
+ *
+ * @param ch The character to escape.
+ * @return The escaped character representation.
  */
 fun escapeJavaChar(ch: Char): String =
     when (ch) {

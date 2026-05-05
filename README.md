@@ -12,7 +12,7 @@ commonMain.dependencies {
 }
 ```
 
-## Escape A String
+## Quick Start
 
 ```kotlin
 import one.wabbit.formatting.escapeJavaString
@@ -42,7 +42,7 @@ check(escapeJavaChar('\u2603') == "\\u2603")
 
 ## Truncation
 
-`escapeJavaString` can enforce a maximum output length after escaping:
+`escapeJavaString` can enforce an escaped-content budget before appending a truncation suffix:
 
 ```kotlin
 import one.wabbit.formatting.escapeJavaString
@@ -53,19 +53,38 @@ check(escaped == "line1...")
 ```
 
 That matters because a single input character may expand to multiple output characters such as `\\n` or `\\u2603`.
+The `limitEnding` suffix is appended after the budget is exhausted and is not counted against
+`limit`.
 
 ## Output Rules
 
-- letters, digits, and common ASCII punctuation are preserved
-- `\n`, `\r`, `\t`, `\b`, quotes, and backslashes get Java-style escapes
-- non-ASCII characters become `\uXXXX`
-- ISO control characters in `escapeJavaChar` become `\xNN`
+- `escapeJavaString` preserves letters, digits, and common ASCII punctuation
+- `escapeJavaString` renders `\n`, `\r`, `\t`, `\b`, selected quotes, and backslashes with
+  Java-style escapes
+- non-ASCII letters and digits are preserved by `escapeJavaString`
+- other non-ASCII characters in `escapeJavaString` become `\uXXXX`
+- `escapeJavaChar` renders `\t`, `\r`, `\n`, and backslash with short escapes
+- `escapeJavaChar` renders other ISO control characters, including backspace, as `\xNN`
+- `escapeJavaChar` leaves quote characters unchanged
 
-## API Reference
+## Status
 
-Published API docs are available at:
+This library is small and stable in scope. It renders Java-style escaped fragments; it does not add
+surrounding quotes or parse escaped Java input back into text.
 
-- [https://wabbit-corp.github.io/kotlin-java-escape/](https://wabbit-corp.github.io/kotlin-java-escape/)
+## Documentation
+
+- [User guide](docs/user-guide.md)
+- [API reference notes](docs/api-reference.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Development](docs/development.md)
+
+Generated API docs can be built locally with Dokka. See [API reference notes](docs/api-reference.md)
+for the command.
+
+## Release Notes
+
+- [CHANGELOG.md](CHANGELOG.md)
 
 ## Licensing
 
